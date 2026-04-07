@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using BusinessLogicLayer.Validators;
+using FluentValidation;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BusinessLogicLayer
@@ -7,6 +9,8 @@ namespace BusinessLogicLayer
     {
         public static IServiceCollection AddBusinessLogic(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddValidatorsFromAssemblyContaining<OrderAddRequestValidator>();
+
             return services;
         }
     }
