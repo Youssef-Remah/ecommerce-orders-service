@@ -64,6 +64,8 @@ namespace DataAccessLayer.Repositories
 
             if (orderToUpdate == null) return null;
 
+            order._id = orderToUpdate._id;
+
             var res = await _orders.ReplaceOneAsync(filter, order);
 
             return order;
