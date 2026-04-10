@@ -17,6 +17,12 @@ namespace DataAccessLayer.Repositories
         public async Task<Order?> AddOrder(Order order)
         {
             order.OrderId = Guid.NewGuid();
+            order._id = order.OrderId;
+
+            foreach (var orderitem in order.OrderItems)
+            {
+                orderitem._id = Guid.NewGuid();
+            }
             await _orders.InsertOneAsync(order);
             
             return order;
