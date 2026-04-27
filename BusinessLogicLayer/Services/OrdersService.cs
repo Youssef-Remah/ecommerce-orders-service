@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.DTOs;
+using BusinessLogicLayer.HttpClients;
 using BusinessLogicLayer.ServiceInterfaces;
 using DataAccessLayer.Entities;
 using DataAccessLayer.RepositoryInterfaces;
@@ -15,7 +16,8 @@ namespace BusinessLogicLayer.Services
                          IValidator<OrderAddRequest> orderAddRequestValidator,
                          IValidator<OrderItemAddRequst> orderItemAddRequestValidator,
                          IValidator<OrderUpdateRequest> orderUpdateRequestValidator,
-                         IValidator<OrderItemUpdateRequest> orderItemUpdateRequestValidator) : IOrdersService
+                         IValidator<OrderItemUpdateRequest> orderItemUpdateRequestValidator,
+                         UsersMicroserviceClient usersMicroserviceClient) : IOrdersService
     {
         public async Task<OrderResponse?> AddOrder(OrderAddRequest orderAddRequest)
         {
@@ -39,7 +41,7 @@ namespace BusinessLogicLayer.Services
                 }
             }
 
-            //TODO: Add logic for checking if UserID exists in Users microservice
+            var user = await usersMicroserviceClient.GetUserByUserId(orderAddRequest.UserId) ?? throw new ArgumentException("Invalid User Id");
 
             Order orderInput = mapper.Map<Order>(orderAddRequest);
 
@@ -123,7 +125,7 @@ namespace BusinessLogicLayer.Services
                 }
             }
 
-            //TODO: Add logic for checking if UserID exists in Users microservice
+            var user = await usersMicroserviceClient.GetUserByUserId(orderUpdateRequest.UserId) ?? throw new ArgumentException("Invalid User Id");
 
             Order orderInput = mapper.Map<Order>(orderUpdateRequest);
 

@@ -1,4 +1,5 @@
-﻿using BusinessLogicLayer.Mappers;
+﻿using BusinessLogicLayer.HttpClients;
+using BusinessLogicLayer.Mappers;
 using BusinessLogicLayer.ServiceInterfaces;
 using BusinessLogicLayer.Services;
 using BusinessLogicLayer.Validators;
@@ -15,6 +16,10 @@ namespace BusinessLogicLayer
             services.AddValidatorsFromAssemblyContaining<OrderAddRequestValidator>();
             services.AddAutoMapper(typeof(OrderAddRequestToOrderMappingProfile).Assembly);
             services.AddScoped<IOrdersService, OrdersService>();
+            services.AddHttpClient<UsersMicroserviceClient>(client =>
+            {
+                client.BaseAddress = new Uri($"http://{configuration["UsersMicroserviceDomain"]}:{configuration["UsersMicroservicePort"]}");
+            });
             return services;
         }
     }
