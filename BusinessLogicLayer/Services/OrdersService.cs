@@ -17,7 +17,8 @@ namespace BusinessLogicLayer.Services
                          IValidator<OrderItemAddRequst> orderItemAddRequestValidator,
                          IValidator<OrderUpdateRequest> orderUpdateRequestValidator,
                          IValidator<OrderItemUpdateRequest> orderItemUpdateRequestValidator,
-                         UsersMicroserviceClient usersMicroserviceClient) : IOrdersService
+                         UsersMicroserviceClient usersMicroserviceClient,
+                         ProductsMicroserviceClient productsMicroserviceClient) : IOrdersService
     {
         public async Task<OrderResponse?> AddOrder(OrderAddRequest orderAddRequest)
         {
@@ -39,7 +40,11 @@ namespace BusinessLogicLayer.Services
                     string errors = string.Join(", ", orderItemAddRequestValidationResult.Errors.Select(temp => temp.ErrorMessage));
                     throw new ArgumentException(errors);
                 }
+
+                var product = await productsMicroserviceClient.GetProductById(orderItemAddRequest.ProductId) ?? throw new ArgumentException("Invalid Product ID");
             }
+
+
 
             var user = await usersMicroserviceClient.GetUserByUserId(orderAddRequest.UserId) ?? throw new ArgumentException("Invalid User Id");
 
@@ -123,6 +128,8 @@ namespace BusinessLogicLayer.Services
                     string errors = string.Join(", ", orderItemUpdateRequestValidationResult.Errors.Select(temp => temp.ErrorMessage));
                     throw new ArgumentException(errors);
                 }
+
+                var product = await productsMicroserviceClient.GetProductById(orderItemUpdateRequest.ProductId) ?? throw new ArgumentException("Invalid Product ID");
             }
 
             var user = await usersMicroserviceClient.GetUserByUserId(orderUpdateRequest.UserId) ?? throw new ArgumentException("Invalid User Id");

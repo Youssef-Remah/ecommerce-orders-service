@@ -20,6 +20,10 @@ namespace BusinessLogicLayer
             {
                 client.BaseAddress = new Uri($"http://{configuration["UsersMicroserviceDomain"]}:{configuration["UsersMicroservicePort"]}");
             });
+            services.AddHttpClient<ProductsMicroserviceClient>(client =>
+            {
+                client.BaseAddress = new Uri($"http://{configuration["ProductsMicroserviceDomain"]}:{configuration["ProductsMicroservicePort"]}");
+            });
             return services;
         }
     }
