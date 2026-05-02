@@ -80,6 +80,14 @@ namespace BusinessLogicLayer.Services
                 }
             }
 
+            if (addedOrderResponse != null)
+            {
+                if (user != null)
+                {
+                    mapper.Map<UserDto, OrderResponse>(user, addedOrderResponse);
+                }
+            }
+
             return addedOrderResponse;
         }
 
@@ -118,6 +126,15 @@ namespace BusinessLogicLayer.Services
                 }
             }
 
+            if (orderResponse != null)
+            {
+                var user = await usersMicroserviceClient.GetUserByUserId(orderResponse.UserId);
+                if (user != null)
+                {
+                    mapper.Map<UserDto, OrderResponse>(user, orderResponse);
+                }
+            }
+
             return orderResponse;
         }
 
@@ -141,6 +158,12 @@ namespace BusinessLogicLayer.Services
                         continue;
 
                     mapper.Map<ProductDto, OrderItemResponse>(productDTO, orderItemResponse);
+                }
+
+                var user = await usersMicroserviceClient.GetUserByUserId(orderResponse.UserId);
+                if (user != null)
+                {
+                    mapper.Map<UserDto, OrderResponse>(user, orderResponse);
                 }
             }
 
@@ -167,6 +190,12 @@ namespace BusinessLogicLayer.Services
                         continue;
 
                     mapper.Map<ProductDto, OrderItemResponse>(productDTO, orderItemResponse);
+                }
+
+                var user = await usersMicroserviceClient.GetUserByUserId(orderResponse.UserId);
+                if (user != null)
+                {
+                    mapper.Map<UserDto, OrderResponse>(user, orderResponse);
                 }
             }
 
@@ -231,6 +260,14 @@ namespace BusinessLogicLayer.Services
                         continue;
 
                     mapper.Map<ProductDto, OrderItemResponse>(productDTO, orderItemResponse);
+                }
+            }
+
+            if (updatedOrderResponse != null)
+            {
+                if (user != null)
+                {
+                    mapper.Map<UserDto, OrderResponse>(user, updatedOrderResponse);
                 }
             }
 
