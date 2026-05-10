@@ -9,7 +9,7 @@ namespace BusinessLogicLayer.Policies
         {
             var policy = Policy.HandleResult<HttpResponseMessage>(r => !r.IsSuccessStatusCode)
                                .WaitAndRetryAsync(
-                                retryCount: 5, //Number of retries
+                                retryCount: 3, //Number of retries
                                 sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), // Delay between retries
                                 onRetry: (outcome, timespan, retryAttempt, context) =>
                                 {

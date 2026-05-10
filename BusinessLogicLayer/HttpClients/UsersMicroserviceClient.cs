@@ -24,7 +24,14 @@ namespace BusinessLogicLayer.HttpClients
                 }
                 else
                 {
-                    throw new HttpRequestException($"Http request failed with status code {response.StatusCode}");
+                    //Approach 1: throw exception
+                    //throw new HttpRequestException($"Http request failed with status code {response.StatusCode}");
+
+                    //Approach 2: return dummy data
+                    return new UserDto(Guid.Empty,
+                                       Email: "Temprarily UnAvailable",
+                                       Name: "Temprarily UnAvailable",
+                                       Gender: "Temprarily UnAvailable");
                 }
             }
 
