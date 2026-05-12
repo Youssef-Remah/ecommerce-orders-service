@@ -1,6 +1,7 @@
 ﻿using BusinessLogicLayer.DTOs;
 using Microsoft.Extensions.Logging;
 using Polly.CircuitBreaker;
+using Polly.Timeout;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -52,7 +53,15 @@ namespace BusinessLogicLayer.HttpClients
                    Name: "Temprarily UnAvailable",
                    Gender: "Temprarily UnAvailable");
             }
+            catch (TimeoutRejectedException ex)
+            {
+                logger.LogInformation(ex, "Timeout occurred while fetching user data. Returning dummy data.");
 
+                return new UserDto(Guid.Empty,
+                   Email: "Temprarily UnAvailable (timeout)",
+                   Name: "Temprarily UnAvailable (timeout)",
+                   Gender: "Temprarily UnAvailable (timeout)");
+            }
         }
     }
 }
