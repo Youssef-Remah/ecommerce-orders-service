@@ -1,6 +1,8 @@
 ﻿using BusinessLogicLayer.DTOs;
+using DnsClient.Internal;
 using Microsoft.Extensions.Logging;
 using Polly;
+using Polly.Bulkhead;
 using System.Text;
 using System.Text.Json;
 
@@ -8,6 +10,19 @@ namespace BusinessLogicLayer.Policies
 {
     public class ProductsMicroservicePolicies(ILogger<ProductsMicroservicePolicies> logger) : IProductsMicroservicePolicies
     {
+        public IAsyncPolicy<HttpResponseMessage> GetBulkHeadIsolationPolicy()
+        {
+            AsyncBulkheadPolicy<HttpResponseMessage> policy = Policy.BulkheadAsync<HttpResponseMessage>(
+                                                              maxParallelization: 2, //Allows up to 2 concurrent requests
+                                                              maxQueuingActions: 40, //Queue up to 40 additional requests
+                                                              onBulkheadRejectedAsync: (context) =>
+                                                              {
+                                                                  logger.LogWarning("BulkheadIsolation triggered. Can't send any more requests since the queue is full");
+                                                                  throw new BulkheadRejectedException("Bulkhead queue is full");
+                                                              });
+            return policy;
+        }
+
         public IAsyncPolicy<HttpResponseMessage> GetFallBackPolicy()
         {
             var policy = Policy.HandleResult<HttpResponseMessage>(r => !r.IsSuccessStatusCode)

@@ -5,5 +5,6 @@ namespace BusinessLogicLayer.Policies
     public interface IProductsMicroservicePolicies
     {
         IAsyncPolicy<HttpResponseMessage> GetFallBackPolicy();
+        IAsyncPolicy<HttpResponseMessage> GetBulkHeadIsolationPolicy();
     }
 }
