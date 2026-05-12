@@ -18,6 +18,8 @@ namespace BusinessLogicLayer
             services.AddAutoMapper(typeof(OrderAddRequestToOrderMappingProfile).Assembly);
             services.AddScoped<IOrdersService, OrdersService>();
             services.AddTransient<IUsersMicroservicePolicies, UsersMicroservicePolicies>();
+            services.AddTransient<IProductsMicroservicePolicies, ProductsMicroservicePolicies>();
+
             services.AddHttpClient<UsersMicroserviceClient>(client =>
             {
                 client.BaseAddress = new Uri($"http://{configuration["UsersMicroserviceDomain"]}:{configuration["UsersMicroservicePort"]}");
@@ -27,7 +29,8 @@ namespace BusinessLogicLayer
             services.AddHttpClient<ProductsMicroserviceClient>(client =>
             {
                 client.BaseAddress = new Uri($"http://{configuration["ProductsMicroserviceDomain"]}:{configuration["ProductsMicroservicePort"]}");
-            });
+            }).AddPolicyHandler(services.BuildServiceProvider().GetRequiredService<IProductsMicroservicePolicies>().GetFallBackPolicy());
+            
             return services;
         }
     }
