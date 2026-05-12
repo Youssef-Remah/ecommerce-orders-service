@@ -6,5 +6,6 @@ namespace BusinessLogicLayer.Policies
     {
         IAsyncPolicy<HttpResponseMessage> GetFallBackPolicy();
         IAsyncPolicy<HttpResponseMessage> GetBulkHeadIsolationPolicy();
+        IAsyncPolicy<HttpResponseMessage> GetWrappedPolicy();
     }
 }

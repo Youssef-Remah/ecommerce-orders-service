@@ -41,5 +41,16 @@ namespace BusinessLogicLayer.Policies
 
             return policy;
         }
+
+        public IAsyncPolicy<HttpResponseMessage> GetWrappedPolicy()
+        {
+            var retryPolicy = GetRetryPolicy();
+            var circuitBreakerPolicy = GetCircuitBreakerPolicy();
+            var timeoutPolicy = GetTimeoutPolicy();
+
+            var wrappedPolicy = Policy.WrapAsync(retryPolicy, circuitBreakerPolicy, timeoutPolicy);
+
+            return wrappedPolicy;
+        }
     }
 }

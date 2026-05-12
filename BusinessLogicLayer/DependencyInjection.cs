@@ -23,14 +23,12 @@ namespace BusinessLogicLayer
             services.AddHttpClient<UsersMicroserviceClient>(client =>
             {
                 client.BaseAddress = new Uri($"http://{configuration["UsersMicroserviceDomain"]}:{configuration["UsersMicroservicePort"]}");
-            }).AddPolicyHandler(services.BuildServiceProvider().GetRequiredService<IUsersMicroservicePolicies>().GetRetryPolicy())
-              .AddPolicyHandler(services.BuildServiceProvider().GetRequiredService<IUsersMicroservicePolicies>().GetCircuitBreakerPolicy())
-              .AddPolicyHandler(services.BuildServiceProvider().GetRequiredService<IUsersMicroservicePolicies>().GetTimeoutPolicy());
+            }).AddPolicyHandler(services.BuildServiceProvider().GetRequiredService<IUsersMicroservicePolicies>().GetWrappedPolicy());
 
             services.AddHttpClient<ProductsMicroserviceClient>(client =>
             {
                 client.BaseAddress = new Uri($"http://{configuration["ProductsMicroserviceDomain"]}:{configuration["ProductsMicroservicePort"]}");
-            }).AddPolicyHandler(services.BuildServiceProvider().GetRequiredService<IProductsMicroservicePolicies>().GetFallBackPolicy());
+            }).AddPolicyHandler(services.BuildServiceProvider().GetRequiredService<IProductsMicroservicePolicies>().GetWrappedPolicy());
             
             return services;
         }

@@ -46,5 +46,15 @@ namespace BusinessLogicLayer.Policies
 
             return policy;
         }
+
+        public IAsyncPolicy<HttpResponseMessage> GetWrappedPolicy()
+        {
+            var fallBackPolicy = GetFallBackPolicy();
+            var bulkHeadPolicy = GetBulkHeadIsolationPolicy();
+
+            var wrappedPolicy = Policy.WrapAsync(fallBackPolicy, bulkHeadPolicy);
+
+            return wrappedPolicy;
+        }
     }
 }
