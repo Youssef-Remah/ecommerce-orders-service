@@ -21,7 +21,8 @@ namespace BusinessLogicLayer
             services.AddHttpClient<UsersMicroserviceClient>(client =>
             {
                 client.BaseAddress = new Uri($"http://{configuration["UsersMicroserviceDomain"]}:{configuration["UsersMicroservicePort"]}");
-            }).AddPolicyHandler(services.BuildServiceProvider().GetRequiredService<IUsersMicroservicePolicies>().GetRetryPolicy());
+            }).AddPolicyHandler(services.BuildServiceProvider().GetRequiredService<IUsersMicroservicePolicies>().GetRetryPolicy())
+              .AddPolicyHandler(services.BuildServiceProvider().GetRequiredService<IUsersMicroservicePolicies>().GetCircuitBreakerPolicy());
 
             services.AddHttpClient<ProductsMicroserviceClient>(client =>
             {
