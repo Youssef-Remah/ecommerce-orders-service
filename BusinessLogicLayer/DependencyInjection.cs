@@ -19,6 +19,7 @@ namespace BusinessLogicLayer
             services.AddScoped<IOrdersService, OrdersService>();
             services.AddTransient<IUsersMicroservicePolicies, UsersMicroservicePolicies>();
             services.AddTransient<IProductsMicroservicePolicies, ProductsMicroservicePolicies>();
+            services.AddTransient<IPollyPolicies, PollyPolicies>();
 
             services.AddHttpClient<UsersMicroserviceClient>(client =>
             {
