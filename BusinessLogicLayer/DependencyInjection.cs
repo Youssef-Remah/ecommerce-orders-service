@@ -20,6 +20,10 @@ namespace BusinessLogicLayer
             services.AddTransient<IUsersMicroservicePolicies, UsersMicroservicePolicies>();
             services.AddTransient<IProductsMicroservicePolicies, ProductsMicroservicePolicies>();
             services.AddTransient<IPollyPolicies, PollyPolicies>();
+            services.AddStackExchangeRedisCache(options => 
+            {
+                options.Configuration = $"{configuration["REDIS_HOST"]}:{configuration["REDIS_PORT"]}";
+            });
 
             services.AddHttpClient<UsersMicroserviceClient>(client =>
             {
