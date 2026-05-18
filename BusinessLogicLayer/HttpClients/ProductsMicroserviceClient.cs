@@ -28,6 +28,12 @@ namespace BusinessLogicLayer.HttpClients
 
                 if (!response.IsSuccessStatusCode)
                 {
+                    if (response.StatusCode == HttpStatusCode.ServiceUnavailable)
+                    {
+                        var productFromFallBack = await response.Content.ReadFromJsonAsync<ProductDto>() ?? throw new NotImplementedException("Fallback policy is not implemented");
+
+                        return productFromFallBack;
+                    }
                     if (response.StatusCode == HttpStatusCode.NotFound)
                     {
                         return null;
