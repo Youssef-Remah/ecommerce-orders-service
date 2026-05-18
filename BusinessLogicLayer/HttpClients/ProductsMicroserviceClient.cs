@@ -1,12 +1,14 @@
 ﻿using BusinessLogicLayer.DTOs;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Polly.Bulkhead;
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace BusinessLogicLayer.HttpClients
 {
-    public class ProductsMicroserviceClient(HttpClient httpClient, ILogger<ProductsMicroserviceClient> logger)
+    public class ProductsMicroserviceClient(HttpClient httpClient, ILogger<ProductsMicroserviceClient> logger, IDistributedCache distributedCache)
     {
         private readonly HttpClient _httpClient = httpClient;
 
@@ -14,6 +16,14 @@ namespace BusinessLogicLayer.HttpClients
         {
             try
             {
+                string? cacheKey = $"product:{id}";
+                string? cachedProduct = await distributedCache.GetStringAsync(cacheKey);
+
+                if(cachedProduct != null)
+                {
+                    return JsonSerializer.Deserialize<ProductDto>(cachedProduct);
+                }
+
                 var response = await _httpClient.GetAsync($"api/products/search/product-id/{id}");
 
                 if (!response.IsSuccessStatusCode)
@@ -34,7 +44,16 @@ namespace BusinessLogicLayer.HttpClients
 
                 var product = await response.Content.ReadFromJsonAsync<ProductDto>();
 
-                return product ?? throw new ArgumentException("Invalid Product Id");
+                if(product == null)
+                    throw new ArgumentException("Invalid Product Id");
+
+                var serializedProduct = JsonSerializer.Serialize(product);
+                var cacheOptions = new DistributedCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(300))
+                                                                     .SetSlidingExpiration(TimeSpan.FromSeconds(100));
+
+                await distributedCache.SetStringAsync(cacheKey, serializedProduct, cacheOptions);
+
+                return product;
             }
             catch (BulkheadRejectedException ex)
             {
