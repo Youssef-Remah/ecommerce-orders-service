@@ -9,13 +9,17 @@
           "Port": 8080
         }
       ],
-      /* http://localhost:5000/gateway/Orders to http://ordersmicroservice.api:8080/api/Orders */
+      /* http://localhost:5000/gateway/Orders to http://ordersmicroserviceapi:8080/api/Orders */
       "UpstreamHttpMethod": [
         "Get",
         "Post",
         "Options"
       ],
-      "UpstreamScheme": "http"
+      "UpstreamScheme": "http",
+      "FileCacheOptions": {
+        "TtlSeconds": 30,
+        "Region": "orders"
+      }
     },
 
 
