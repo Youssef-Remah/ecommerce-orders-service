@@ -24,7 +24,7 @@ namespace BusinessLogicLayer.HttpClients
                     return JsonSerializer.Deserialize<ProductDto>(cachedProduct);
                 }
 
-                var response = await _httpClient.GetAsync($"api/products/search/product-id/{id}");
+                var response = await _httpClient.GetAsync($"gateway/products/search/product-id/{id}");
 
                 if (!response.IsSuccessStatusCode)
                 {

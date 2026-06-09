@@ -25,7 +25,7 @@ namespace BusinessLogicLayer.HttpClients
                     return JsonSerializer.Deserialize<UserDto>(cachedUser);
                 }
 
-                var response = await _httpClient.GetAsync($"/api/Users/{id}");
+                var response = await _httpClient.GetAsync($"/gateway/Users/{id}");
 
                 if (!response.IsSuccessStatusCode)
                 {
