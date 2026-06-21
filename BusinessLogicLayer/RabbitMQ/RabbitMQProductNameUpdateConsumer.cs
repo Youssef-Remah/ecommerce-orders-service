@@ -1,5 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
+using System.Text;
+using System.Text.Json;
 
 namespace BusinessLogicLayer.RabbitMQ
 {
@@ -9,8 +13,9 @@ namespace BusinessLogicLayer.RabbitMQ
         private readonly string hostname, username, password, port;
         private readonly IConnection _connection;
         private readonly IModel _channel;
+        private readonly ILogger<RabbitMQProductNameUpdateConsumer> _logger;
 
-        public RabbitMQProductNameUpdateConsumer(IConfiguration configuration)
+        public RabbitMQProductNameUpdateConsumer(IConfiguration configuration, ILogger<RabbitMQProductNameUpdateConsumer> logger)
         {
             _configuration = configuration;
 
@@ -28,6 +33,7 @@ namespace BusinessLogicLayer.RabbitMQ
             };
             _connection = connectionFactory.CreateConnection();
             _channel = _connection.CreateModel();
+            _logger = logger;
         }
         public void Dispose()
         {
@@ -49,6 +55,19 @@ namespace BusinessLogicLayer.RabbitMQ
 
             //Bind the message to exchange
             _channel.QueueBind(queue: queueName, exchange: exchangeName, routingKey: routingKey);
+
+            var consumer = new EventingBasicConsumer(_channel);
+            consumer.Received += (sender, args) =>
+            {
+                var body = args.Body.ToArray();
+                var message = Encoding.UTF8.GetString(body);
+                if(message != null)
+                {
+                    var productNameUpdateMessage = JsonSerializer.Deserialize<ProductNameUpdateMessage>(message);
+                    _logger.LogInformation($"Product name updated: {productNameUpdateMessage.ProductID}, New name: {productNameUpdateMessage.NewName}");
+                }
+            };
+            _channel.BasicConsume(queue: queueName, consumer: consumer, autoAck: true);
         }
 
     }
