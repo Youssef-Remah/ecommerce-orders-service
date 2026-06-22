@@ -41,7 +41,7 @@ namespace BusinessLogicLayer.RabbitMQ
             _connection.Dispose();
         }
 
-        public void Consumer()
+        public void Consume()
         {
             string routingKey = "product.update.name";
             string queueName = "orders.product.update.name.queue";

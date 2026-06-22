@@ -2,6 +2,7 @@
 {
     public interface IRabbitMQProductNameUpdateConsumer
     {
-        void Consumer();
+        void Consume();
+        void Dispose();
     }
 }
