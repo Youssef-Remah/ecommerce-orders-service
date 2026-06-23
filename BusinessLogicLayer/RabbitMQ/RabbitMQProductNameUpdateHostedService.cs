@@ -2,7 +2,7 @@
 
 namespace BusinessLogicLayer.RabbitMQ
 {
-    public class RabbitMQProductNameUpdateHostedService : IHostedService
+    public class RabbitMQProductNameUpdateHostedService : BackgroundService
     {
         private readonly IRabbitMQProductNameUpdateConsumer _consumer;
 
@@ -11,18 +11,28 @@ namespace BusinessLogicLayer.RabbitMQ
             _consumer = consumer;
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _consumer.Consume();
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                try
+                {
+                    _consumer.Consume();
 
-            return Task.CompletedTask;
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+
+                    await Task.Delay(5000, stoppingToken);
+                }
+            }
         }
-
-        public Task StopAsync(CancellationToken cancellationToken)
+        public override void Dispose()
         {
             _consumer.Dispose();
-
-            return Task.CompletedTask;
+            base.Dispose();
         }
     }
 }

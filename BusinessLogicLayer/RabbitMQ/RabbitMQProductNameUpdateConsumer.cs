@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Connections;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -11,8 +12,9 @@ namespace BusinessLogicLayer.RabbitMQ
     {
         private readonly IConfiguration _configuration;
         private readonly string hostname, username, password, port;
-        private readonly IConnection _connection;
-        private readonly IModel _channel;
+        private IConnection _connection;
+        private IModel _channel;
+        private ConnectionFactory connectionFactory;
         private readonly ILogger<RabbitMQProductNameUpdateConsumer> _logger;
 
         public RabbitMQProductNameUpdateConsumer(IConfiguration configuration, ILogger<RabbitMQProductNameUpdateConsumer> logger)
@@ -24,15 +26,14 @@ namespace BusinessLogicLayer.RabbitMQ
             password = _configuration["RabbitMQ_Password"]!;
             port = _configuration["RabbitMQ_Port"]!;
 
-            var connectionFactory = new ConnectionFactory()
+            connectionFactory = new ConnectionFactory()
             {
                 HostName = hostname,
                 UserName = username,
                 Password = password,
                 Port = Convert.ToInt32(port)
             };
-            _connection = connectionFactory.CreateConnection();
-            _channel = _connection.CreateModel();
+
             _logger = logger;
         }
         public void Dispose()
@@ -45,6 +46,9 @@ namespace BusinessLogicLayer.RabbitMQ
         {
             string routingKey = "product.update.name";
             string queueName = "orders.product.update.name.queue";
+
+            _connection = connectionFactory.CreateConnection();
+            _channel = _connection.CreateModel();
 
             //Create exchange
             string exchangeName = _configuration["RabbitMQ_Products_Exchange"]!;
