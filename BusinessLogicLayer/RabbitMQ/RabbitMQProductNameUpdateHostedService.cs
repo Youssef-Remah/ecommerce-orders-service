@@ -19,12 +19,11 @@ namespace BusinessLogicLayer.RabbitMQ
                 {
                     _consumer.Consume();
 
-                    return;
+                    await Task.Delay(Timeout.Infinite, stoppingToken);
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
-
                     await Task.Delay(5000, stoppingToken);
                 }
             }

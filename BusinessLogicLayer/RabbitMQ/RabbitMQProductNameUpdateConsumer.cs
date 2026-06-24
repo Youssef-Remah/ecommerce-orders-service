@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Connections;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -46,7 +45,7 @@ namespace BusinessLogicLayer.RabbitMQ
         {
             string routingKey = "product.update.name";
             string queueName = "orders.product.update.name.queue";
-
+            
             _connection = connectionFactory.CreateConnection();
             _channel = _connection.CreateModel();
 
