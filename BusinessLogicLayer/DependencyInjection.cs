@@ -21,8 +21,10 @@ namespace BusinessLogicLayer
             services.AddTransient<IUsersMicroservicePolicies, UsersMicroservicePolicies>();
             services.AddTransient<IProductsMicroservicePolicies, ProductsMicroservicePolicies>();
             services.AddTransient<IRabbitMQProductNameUpdateConsumer, RabbitMQProductNameUpdateConsumer>();
+            services.AddTransient<IRabbitMQProductDeletionConsumer, RabbitMQProductDeletionConsumer>();
             services.AddTransient<IPollyPolicies, PollyPolicies>();
             services.AddHostedService<RabbitMQProductNameUpdateHostedService>();
+            services.AddHostedService<RabbitMQProductDeletionHostedService>();
             services.AddStackExchangeRedisCache(options => 
             {
                 options.Configuration = $"{configuration["REDIS_HOST"]}:{configuration["REDIS_PORT"]}";

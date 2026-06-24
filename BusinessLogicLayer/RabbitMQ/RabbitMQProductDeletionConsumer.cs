@@ -7,15 +7,15 @@ using System.Text.Json;
 
 namespace BusinessLogicLayer.RabbitMQ
 {
-    public class RabbitMQProductNameUpdateConsumer : IRabbitMQProductNameUpdateConsumer, IDisposable
+    public class RabbitMQProductDeletionConsumer : IRabbitMQProductDeletionConsumer, IDisposable
     {
         private readonly IConfiguration _configuration;
         private IConnection _connection;
         private IModel _channel;
         private ConnectionFactory connectionFactory;
-        private readonly ILogger<RabbitMQProductNameUpdateConsumer> _logger;
+        private readonly ILogger<RabbitMQProductDeletionConsumer> _logger;
 
-        public RabbitMQProductNameUpdateConsumer(IConfiguration configuration, ILogger<RabbitMQProductNameUpdateConsumer> logger)
+        public RabbitMQProductDeletionConsumer(IConfiguration configuration, ILogger<RabbitMQProductDeletionConsumer> logger)
         {
             _configuration = configuration;
 
@@ -42,8 +42,8 @@ namespace BusinessLogicLayer.RabbitMQ
 
         public void Consume()
         {
-            string routingKey = "product.update.name";
-            string queueName = "orders.product.update.name.queue";
+            string routingKey = "product.delete";
+            string queueName = "orders.product.delete.queue";
             
             _connection = connectionFactory.CreateConnection();
             _channel = _connection.CreateModel();
@@ -65,8 +65,8 @@ namespace BusinessLogicLayer.RabbitMQ
                 var message = Encoding.UTF8.GetString(body);
                 if(message != null)
                 {
-                    var productNameUpdateMessage = JsonSerializer.Deserialize<ProductNameUpdateMessage>(message);
-                    _logger.LogInformation($"Product name updated: {productNameUpdateMessage.ProductID}, New name: {productNameUpdateMessage.NewName}");
+                    var productDeletionUpdateMessage = JsonSerializer.Deserialize<ProductDeletionMessage>(message);
+                    _logger.LogInformation($"Product is deleted: {productDeletionUpdateMessage?.ProductID}, Name: {productDeletionUpdateMessage?.ProductName}");
                 }
             };
             _channel.BasicConsume(queue: queueName, consumer: consumer, autoAck: true);
